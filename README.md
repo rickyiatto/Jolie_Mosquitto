@@ -9,7 +9,7 @@ Jolie connector for Mosquitto framework
 
 The MQTT protocol is based on the principle of publishing messages and subscribing to topics, or "pub/sub". Multiple clients connect to a broker and subscribe to topics that they are interested in. Clients also connect to the broker and publish messages to topics. Many clients may subscribe to the same topics and do with the information as they please. The broker and MQTT act as a simple, common interface for everything to connect to.
 
-![Architecture](\architecture.png)
+![Architecture](https://github.com/rickyiatto/Jolie_Mosquitto/blob/develop/architecture.png)
 
 In this case, the Jolie client is the publisher and publish the message passed as argument from command line.
 The Jolie server is the subscriber. It can subscribe to one or more topics and receives all message published on that topics.
