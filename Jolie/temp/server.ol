@@ -30,6 +30,7 @@ init {
 
 main {
     receive (request)
-    println@Console("topic : "+request.topic)()
-    println@Console("message : "+request.message)()
+    println@Console("client ID : "+request.clientId)()
+    println@Console("topic :     "+request.topic)()
+    println@Console("message :   "+request.message)()
 }

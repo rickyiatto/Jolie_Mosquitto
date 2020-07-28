@@ -10,7 +10,18 @@ embedded {
 }
 
 init {
-    setMosquitto@Mosquitto ({brokerURL = "tcp://localhost:1883"})()
+    req << {
+        brokerURL = "tcp://localhost:1883"
+        // posso aggiungere tutte le options disponibili
+        options << {
+            setAutomaticReconnect = true
+            setCleanSession = false
+            setConnectionTimeout = 25
+            setKeepAliveInterval = 0
+            setMaxInflight = 200
+        }
+    }
+    setMosquitto@Mosquitto (req)()
 }
 
 main {
