@@ -25,7 +25,8 @@ public class MosquittoConnectorJavaService extends JavaService {
         try {
             this.client = new MqttClient(brokerURL, clientId, new MqttDefaultFilePersistence("/tmp"));
             MqttConnectOptions options = new MqttConnectOptions();
-            // prova da qui
+            
+            // implementazione delle opzioni MqttConnectOptions
             
             if (request.hasChildren("options")) {
                 Value op = request.getFirstChild("options");
@@ -58,8 +59,6 @@ public class MosquittoConnectorJavaService extends JavaService {
                     options.setServerURIs(serverURIs);
                 }
             }
-            
-            // a qui
             
             //options.setCleanSession(false);
             //options.setWill(client.getTopic("home/LWT"), "I'm gone. Bye".getBytes(), 0, false); 
