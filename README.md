@@ -151,15 +151,17 @@ interface MosquittoReceiverInteface {
 ```
 
 The ```MosquittoPublisherInterface``` exposes a method called ```sendMessage``` which receives an input request of the ```MosquittoMessageRequest``` type. This type requires two fields: a ```topic``` (to publish the message) and a ```message``` (to publish).
+
 The ```MosquittoInterface``` exposes a method called ```setMosquitto``` which receives in input a request of the type ```SetMosquittoRequest```. This type requires two mandatory fields: a ```brokerURL``` (which is used to connect to the broker Mosquitto) and a ```clientId``` (if not specified a random one is generated).
 You can also specify some values of the ```options``` to customize the connection (if not specified, the default values are used).
+
 The ```MosquittoReceiverInteface``` exposes a method called ```receive``` which receives a ```MosquittoMessageRequest``` request, described above.
 
 
 ## Options
 
 In order to let you customize your communications, you can modify some options (these descriptions are taken from the official Paho library documentation):
-https://www.eclipse.org/paho/files/javadoc/org/eclipse/paho/client/mqttv3/MqttConnectOptions.html#setWill-org.eclipse.paho.client.mqttv3.MqttTopic-byte:A-int-boolean-
+https://www.eclipse.org/paho/files/javadoc/org/eclipse/paho/client/mqttv3/MqttConnectOptions.html
 
 - **setAutomaticReconnect : bool**
 Sets whether the client will automatically attempt to reconnect to the server if the connection is lost.
