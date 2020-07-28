@@ -16,9 +16,9 @@ init {
         options << {
             setAutomaticReconnect = true
             setCleanSession = false
-            setConnectionTimeout = 25
-            setKeepAliveInterval = 0
-            setMaxInflight = 200
+            setConnectionTimeout = 20
+            setKeepAliveInterval = 20
+            setMaxInflight = 150
         }
     }
     setMosquitto@Mosquitto (req)()

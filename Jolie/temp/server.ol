@@ -24,6 +24,14 @@ init {
         subscribe << {
             topic = "home/#"
         }
+        // posso aggiungere tutte le options disponibili
+        options << {
+            setAutomaticReconnect = true
+            setCleanSession = false
+            setConnectionTimeout = 25
+            setKeepAliveInterval = 0
+            setMaxInflight = 200
+        }
     }
     setMosquitto@Mosquitto (request)()
 }

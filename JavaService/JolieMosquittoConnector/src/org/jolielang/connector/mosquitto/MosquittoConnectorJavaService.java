@@ -32,29 +32,29 @@ public class MosquittoConnectorJavaService extends JavaService {
                 Value op = request.getFirstChild("options");
                 if (op.hasChildren("setAutomaticReconnect")) {
                     options.setAutomaticReconnect(op.getFirstChild("setAutomaticReconnect").boolValue());
-                    System.out.println("setAutomaticReconnect impostato correttamente!   valore : "+op.getFirstChild("setAutomaticReconnect").boolValue());
+                    System.out.println("setAutomaticReconnect correctly set. Value : "+op.getFirstChild("setAutomaticReconnect").boolValue());
                 }
                 if (op.hasChildren("setCleanSession")) {
                     options.setCleanSession(op.getFirstChild("setCleanSession").boolValue());
-                    System.out.println("setCleanSession impostato correttamente!   valore : "+op.getFirstChild("setCleanSession").boolValue());
+                    System.out.println("setCleanSession correctly set. Value : "+op.getFirstChild("setCleanSession").boolValue());
                 }
                 if (op.hasChildren("setConnectionTimeout")) {
                     options.setConnectionTimeout(op.getFirstChild("setConnectionTimeout").intValue());
-                    System.out.println("setConnectionTimeout impostato correttamente!   valore : "+op.getFirstChild("setConnectionTimeout").intValue());
+                    System.out.println("setConnectionTimeout correctly set. Value : "+op.getFirstChild("setConnectionTimeout").intValue());
                 }
                 if (op.hasChildren("setKeepAliveInterval")) {
                     options.setKeepAliveInterval(op.getFirstChild("setKeepAliveInterval").intValue());
-                    System.out.println("setKeepAliveInterval impostato correttamente!   valore : "+op.getFirstChild("setKeepAliveInterval").intValue());
+                    System.out.println("setKeepAliveInterval correctly set. Value : "+op.getFirstChild("setKeepAliveInterval").intValue());
                 }
                 if (op.hasChildren("setMaxInflight")) {
                     options.setMaxInflight(op.getFirstChild("setMaxInflight").intValue());
-                    System.out.println("setMaxInflight impostato correttamente!   valore : "+op.getFirstChild("setMaxInflight").intValue());
+                    System.out.println("setMaxInflight correctly set. Value : "+op.getFirstChild("setMaxInflight").intValue());
                 }
                 if (op.hasChildren("setServerURIs")) {
                     String[] serverURIs = new String[op.getChildren("setServerURIs").size()];
                     for (int i=0; i<op.getChildren("setServerURIs").size(); i++) {
                         serverURIs[i] = op.getChildren("setServerURIs").get(i).strValue();
-                        System.out.println("URI["+i+"] impostata : "+serverURIs[i]);
+                        System.out.println("URI["+i+"] correctly set : "+serverURIs[i]);
                     }
                     options.setServerURIs(serverURIs);
                 }
