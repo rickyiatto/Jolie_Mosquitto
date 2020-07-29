@@ -15,53 +15,18 @@ JavaService uses the Paho library to create both the publisher and the subscribe
 Jolie's client service communicates with the JavaService, which takes care of creating a publisher client, creating the connection with the Mosquitto broker and finally transmitting the message.
 Jolie's server service communicates with JavaService, which is responsible for creating a subscriber client, creating the connection with the Mosquitto broker and finally subscribing to the desired topics.
 
+To install the Mosquitto broker on your computer follow the instructions provided by the official Eclipse Mosquitto website at the link: https://mosquitto.org/download/
+
 ## Example
 
-#### client.ol
-
-```java
-include "MosquittoInterface.iol"
-
-outputPort Mosquitto {
-    Interfaces: MosquittoPublisherInterface , MosquittoInterface
-}
-
-embedded {
-    Java: 
-        "org.jolielang.connector.mosquitto.MosquittoConnectorJavaService" in Mosquitto
-}
-
-init {
-    req << {
-        brokerURL = "tcp://localhost:1883"
-        options << {
-            setAutomaticReconnect = true
-            setCleanSession = false
-            setConnectionTimeout = 20
-            setKeepAliveInterval = 20
-            setMaxInflight = 150
-        }
-    }
-    setMosquitto@Mosquitto (req)()
-}
-
-main {
-    request << {
-        topic = "home/test",
-        message = args[0]
-    }
-    sendMessage@Mosquitto (request)()
-}
-```
-
-You can modify all options values and the topic you want to publish in.
-An example of launch of this client is:  
-    ```jolie client.ol "hello"```.
+To be able to use the connector correctly, be sure to add both the file JolieMosquittoConnector.jar and org.eclipse.paho.client.mqttv3-1.1.2-20170804.042534-34.jar to your project folder.
+- ```JolieMosquittoConnector.jar``` contains both the connector and the interfaces necessary for the Jolie service to communicate with the Mosquitto broker.
+- ```org.eclipse.paho.client.mqttv3-1.1.2-20170804.042534-34.jar``` is the dependency on the Paho library that JavaService uses to create the publisher and subscriber.
 
 #### server.ol
 
 ```java
-include "MosquittoInterface.iol"
+include "mosquitto/interfaces/MosquittoInterface.iol"
 include "console.iol"
 
 execution {concurrent}
@@ -87,12 +52,21 @@ init {
         subscribe << {
             topic = "home/#"
         }
+        // I can set all the options available from the Paho library
         options << {
             setAutomaticReconnect = true
             setCleanSession = false
             setConnectionTimeout = 25
             setKeepAliveInterval = 0
             setMaxInflight = 200
+            setUserName = "SERVERadmin"
+            setPassword = "passwordAdmin"
+            setWill << {
+                topicWill = "home/LWT"
+                payloadWill = "server disconnected"
+                qos = 0
+                retained = false
+            }
         }
     }
     setMosquitto@Mosquitto (request)()
@@ -100,7 +74,6 @@ init {
 
 main {
     receive (request)
-    println@Console("client ID : "+request.clientId)()
     println@Console("topic :     "+request.topic)()
     println@Console("message :   "+request.message)()
 }
@@ -109,6 +82,60 @@ main {
 You can modify all options values and the topic you want to subscribe in. The string "home/#" is used to subscribe on every subtopic of "home".
 An example of launch of this client is:  
     ```jolie server.ol```.
+
+The interface to be included must follow exactly the path reported ```"mosquitto/interfaces/MosquittoInterface.iol"```, as the requested file is located in the jar at this address.
+
+#### client.ol
+
+```java
+include "mosquitto/interfaces/MosquittoInterface.iol"
+
+outputPort Mosquitto {
+    Interfaces: MosquittoPublisherInterface , MosquittoInterface
+}
+
+embedded {
+    Java: 
+        "org.jolielang.connector.mosquitto.MosquittoConnectorJavaService" in Mosquitto
+}
+
+init {
+    req << {
+        brokerURL = "tcp://localhost:1883"
+        // I can set all the options available from the Paho library
+        options << {
+            setAutomaticReconnect = true
+            setCleanSession = false
+            setConnectionTimeout = 20
+            setKeepAliveInterval = 20
+            setMaxInflight = 150
+            setUserName = "CLIENTadmin"
+            setPassword = "password"
+            setWill << {
+                topicWill = "home/LWT"
+                payloadWill = "client disconnected"
+                qos = 0
+                retained = false
+            }
+        }
+    }
+    setMosquitto@Mosquitto (req)()
+}
+
+main {
+    request << {
+        topic = "home/test",
+        message = args[0]
+    }
+    sendMessage@Mosquitto (request)()
+}
+```
+
+You can modify all options values and the topic you want to publish in.
+An example of launch of this client is:  
+    ```jolie client.ol "hello"```.
+
+The interface to be included must follow exactly the path reported ```"mosquitto/interfaces/MosquittoInterface.iol"```, as the requested file is located in the jar at this address.
 
 #### MosquittoInterface.iol
 
@@ -157,6 +184,8 @@ You can also specify some values of the ```options``` to customize the connectio
 
 The ```MosquittoReceiverInteface``` exposes a method called ```receive``` which receives a ```MosquittoMessageRequest``` request, described above.
 
+This interface is already inside the ```JolieMosquittoConnector.jar``` file.
+To be included correctly you need to call it through the string ```include "mosquitto/interfaces/MosquittoInterface.iol"```.
 
 ## Options
 
@@ -190,6 +219,12 @@ The default value is 60 seconds.
 Sets the "max inflight". please increase this value in a high traffic environment.
 The default value is 10.
 
+- **setUserName : string**
+Sets the user name to use for the connection.
+
+- **setPassword : char[]**
+Sets the password to use for the connection.
+
 - **setServerURIs : string[]**
 Set a list of one or more serverURIs the client may connect to.
 Each serverURI specifies the address of a server that the client may connect to. Two types of connection are supported tcp:// for a TCP connection and ssl:// for a TCP connection secured by SSL/TLS. For example:
@@ -204,3 +239,11 @@ Specifying a list of servers that a client may connect to has several uses:
     The cleansession flag must be set to false if durable subscriptions and/or reliable message delivery is required.
     - **Hunt List**
     A set of servers may be specified that are not "equal" (as in the high availability option). As no state is shared across the servers reliable message delivery and durable subscriptions are not valid. The cleansession flag must be set to true if the hunt list mode is used.
+
+- **setWill : void**
+Sets the "Last Will and Testament" (LWT) for the connection. In the event that this client unexpectedly loses its connection to the server, the server will publish a message to itself using the supplied details.
+**Parameters**:
+    - **topic** - the topic to publish to : ```string```
+    - **payload** - the byte payload for the message : ```string```
+    - **qos** - the quality of service to publish the message at (0, 1 or 2) : ```int```
+    - **retained** - whether or not the message should be retained : ```bool```
