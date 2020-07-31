@@ -11,7 +11,7 @@ embedded {
 
 init {
     req << {
-        brokerURL = "tcp://localhost:1883"
+        brokerURL = "tcp://mqtt.eclipse.org:1883"
         // I can set all the options available from the Paho library
         options << {
             setAutomaticReconnect = true
@@ -25,7 +25,7 @@ init {
                 topicWill = "home/LWT"
                 payloadWill = "client disconnected"
                 qos = 0
-                retained = false
+                retained = true
             }
         }
     }
@@ -34,7 +34,7 @@ init {
 
 main {
     request << {
-        topic = "home/test",
+        topic = "jolie/test",
         message = args[0]
     }
     sendMessage@Mosquitto (request)()

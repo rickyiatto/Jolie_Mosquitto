@@ -20,9 +20,9 @@ embedded {
 
 init {
     request << {
-        brokerURL = "tcp://localhost:1883",
+        brokerURL = "tcp://mqtt.eclipse.org:1883",
         subscribe << {
-            topic = "home/#"
+            topic = "jolie/#"
         }
         // I can set all the options available from the Paho library
         options << {
@@ -37,7 +37,7 @@ init {
                 topicWill = "home/LWT"
                 payloadWill = "server disconnected"
                 qos = 0
-                retained = false
+                retained = true
             }
         }
     }
