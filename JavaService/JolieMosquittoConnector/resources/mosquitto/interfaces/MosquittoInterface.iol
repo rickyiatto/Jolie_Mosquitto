@@ -19,6 +19,7 @@ type SetMosquittoRequest: void {
         // setSocketFactory
         // setSLLProprieties
         // setMqttVersion  
+	debug?: bool
     }
     subscribe?: void {
         topic[1,*]: string

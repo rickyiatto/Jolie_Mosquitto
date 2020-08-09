@@ -29,18 +29,21 @@ div {
 }
 
 #textChat {
-    padding: 10px 10px 10px 10px;
+    padding: 10px 20px 10px 20px;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
     border: solid 1px #d19b00ff;
     color: #d19b00ff;
     background-color: #0a724fff;
-    margin-bottom: 25px;
     resize: none;
+    text-align: left;
+    line-height: 200%;
 }
 
 #mex {
     padding: 3px 3px 3px 10px;
     margin-right: 10px; 
+    margin-top: 25px;
     border:solid 1px #d19b00ff; 
     color: #d19b00ff; 
     background-color: #0a724fff;

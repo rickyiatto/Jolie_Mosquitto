@@ -19,6 +19,8 @@ To install the Mosquitto broker on your computer follow the instructions provide
 
 ## Example
 
+### client_server :
+
 To be able to use the connector correctly, be sure to add both the file JolieMosquittoConnector.jar and org.eclipse.paho.client.mqttv3-1.1.2-20170804.042534-34.jar to your project folder.
 - ```JolieMosquittoConnector.jar``` contains both the connector and the interfaces necessary for the Jolie service to communicate with the Mosquitto broker.
 - ```org.eclipse.paho.client.mqttv3-1.1.2-20170804.042534-34.jar``` is the dependency on the Paho library that JavaService uses to create the publisher and subscriber.
@@ -186,6 +188,98 @@ The ```MosquittoReceiverInteface``` exposes a method called ```receive``` which 
 
 This interface is already inside the ```JolieMosquittoConnector.jar``` file.
 To be included correctly you need to call it through the string ```include "mosquitto/interfaces/MosquittoInterface.iol"```.
+
+### chat :
+
+In this example I wanted to apply the MQTT communication protocol to a simple chat.
+Always exploiting the JavaService explained in the previous example, and exploiting Leonardo (a Web Server written in Jolie: https://github.com/jolie/leonardo) is sufficient to launch the command ```jolie leonardo.ol``` and subsequently open a browser to the page ```localhost:16000``` to observe its operation.
+
+#### frontend.ol
+
+```java
+include "FrontendInterface.iol"
+include "mosquitto/interfaces/MosquittoInterface.iol"
+include "console.iol"
+include "json_utils.iol"
+
+execution {concurrent}
+
+outputPort Mosquitto {
+    Interfaces: MosquittoPublisherInterface , MosquittoInterface
+}
+
+embedded {
+    Java: 
+        "org.jolielang.connector.mosquitto.MosquittoConnectorJavaService" in Mosquitto
+}
+
+inputPort Frontend {
+    Location: "local"
+    Protocol: sodep
+    Interfaces: MosquittoReceiverInteface, FrontendInterface
+}
+
+init {
+    
+    request << {
+        brokerURL = "tcp://mqtt.eclipse.org:1883",
+        subscribe << {
+            topic = "jolie/test/chat"
+        }
+        // I can set all the options available from the Paho library
+        options.debug = true
+    }
+    setMosquitto@Mosquitto (request)()
+    println@Console("SUBSCRIBER connection done! Waiting for message on topic : "+request.subscribe.topic)()
+    
+}
+
+main {
+
+    [ receive (request) ]
+    {
+        getJsonValue@JsonUtils(request.message)(jsonMessage)
+        global.messageQueue[#global.messageQueue] << {
+            message = jsonMessage.message
+            username = jsonMessage.username
+        }
+    }
+
+    [ getChatMessages( GetChatMessagesRequest )( GetChatMessagesResponse ) {
+        for (i=0, i<#global.messageQueue, i++) {
+            GetChatMessagesResponse.messageQueue[i] << global.messageQueue[i]
+        }
+        undef(global.messageQueue)
+    }]
+
+    [ sendChatMessage( messageRequest )( response ) {
+        json << {
+            username = global.username
+            message = messageRequest.message
+        }
+        getJsonString@JsonUtils(json)(jsonString)
+        req << {
+            topic = "jolie/test/chat",
+            message = jsonString
+        }
+        println@Console("PUBLISHER ["+global.username+"] connection done! Message correctly send: "+messageRequest.message)()
+        sendMessage@Mosquitto (req)()
+	}]
+
+    [ setUsername( usernameRequest )( usernameResponse ) {
+        global.username = usernameRequest.username
+        println@Console("Username set for the current session: "+global.username)()
+    }]
+}
+```
+
+The ```frontend.ol``` service presents an ```outputPort``` in which the JavaService described in the previous example is embedded, while the ```inputPort``` communicates both with the JavaService and with the ```FrontendInterface``` interface.
+In the ```init``` method, it prepares the request (setting all the desired parameters) to send to the JavaService to open a connection with the broker Mosquitto.
+In the ```main``` method, instead, it develops four operations:
+- **setUsername:** sets the username of the user who wants to connect to the chat.
+- **sendChatMessage:** publish the messages sent in the chat at the broker Mosquitto to the topic set in the connection. The message is converted into a json to allow the sending of additional information along with the message text.
+- **receive:** receives the messages from broker Mosquitto and saves them in a global variable ```messageQueue```.
+- **getChatMessages:** this operation reads all the messages in the queue, sends them to the WebService which prints them in the chat and empties the ```messageQueueue```. This operation is called cyclically every 0.5 seconds by the web page.
 
 ## Options
 
