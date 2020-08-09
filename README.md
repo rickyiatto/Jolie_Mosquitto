@@ -19,11 +19,11 @@ To install the Mosquitto broker on your computer follow the instructions provide
 
 ## Example
 
-### client_server :
-
 To be able to use the connector correctly, be sure to add both the file JolieMosquittoConnector.jar and org.eclipse.paho.client.mqttv3-1.1.2-20170804.042534-34.jar to your project folder.
 - ```JolieMosquittoConnector.jar``` contains both the connector and the interfaces necessary for the Jolie service to communicate with the Mosquitto broker.
 - ```org.eclipse.paho.client.mqttv3-1.1.2-20170804.042534-34.jar``` is the dependency on the Paho library that JavaService uses to create the publisher and subscriber.
+
+### CLIENT - SERVER :
 
 #### server.ol
 
@@ -189,7 +189,7 @@ The ```MosquittoReceiverInteface``` exposes a method called ```receive``` which 
 This interface is already inside the ```JolieMosquittoConnector.jar``` file.
 To be included correctly you need to call it through the string ```include "mosquitto/interfaces/MosquittoInterface.iol"```.
 
-### chat :
+### CHAT :
 
 In this example I wanted to apply the MQTT communication protocol to a simple chat.
 Always exploiting the JavaService explained in the previous example, and exploiting Leonardo (a Web Server written in Jolie: https://github.com/jolie/leonardo) is sufficient to launch the command ```jolie leonardo.ol``` and subsequently open a browser to the page ```localhost:16000``` to observe its operation.
