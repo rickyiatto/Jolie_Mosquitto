@@ -29,7 +29,10 @@ div {
 }
 
 #textChat {
-    padding: 10px 20px 10px 20px;
+    height: 350px;
+    width: 800px;
+    margin: auto;
+    padding: 5px 5px 5px 5px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
     border: solid 1px #d19b00ff;
@@ -38,6 +41,19 @@ div {
     resize: none;
     text-align: left;
     line-height: 200%;
+    overflow: auto;
+}
+
+#divMessage {
+    display: table;
+    width: auto;
+    padding: 5px 20px 5px 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    /*border: solid 1px #d19b00ff;*/
+    border-radius: 15px;
+    color: #d19b00ff;
+    background-color: #0b634dff;
 }
 
 #mex {

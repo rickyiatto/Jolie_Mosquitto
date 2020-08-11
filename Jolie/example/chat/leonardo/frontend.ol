@@ -39,13 +39,25 @@ inputPort Frontend {
 init {
     
     request << {
-        brokerURL = "tcp://mqtt.eclipse.org:1883",
+        brokerURL = "ssl://localhost:8883",
         subscribe << {
             topic = "jolie/test/chat"
         }
         // I can set all the options available from the Paho library
-        options.debug = true
+        options << {
+            setCleanSession = false
+            debug = true
+            setUserName = "joliechat"
+            setPassword = "riccardoiattoni"
+            setSocketFactory << {
+                caCrtFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_ca.crt"
+                crtFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_srv.crt"
+                keyFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_srv.key"
+                password = "riccardoiattoni"
+            }
+        }
     }
+
     setMosquitto@Mosquitto (request)()
     println@Console("SUBSCRIBER connection done! Waiting for message on topic : "+request.subscribe.topic)()
     

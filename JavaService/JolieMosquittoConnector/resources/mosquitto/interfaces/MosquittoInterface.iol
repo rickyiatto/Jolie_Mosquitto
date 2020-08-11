@@ -16,10 +16,14 @@ type SetMosquittoRequest: void {
             qos: int
             retained: bool 
         }
-        // setSocketFactory
-        // setSLLProprieties
+        setSocketFactory?: void {
+            caCrtFile: string
+            crtFile: string
+            keyFile: string
+            password: string
+        }
         // setMqttVersion  
-	debug?: bool
+	    debug?: bool
     }
     subscribe?: void {
         topic[1,*]: string
