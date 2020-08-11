@@ -152,6 +152,21 @@ type SetMosquittoRequest: void {
         setKeepAliveInterval?: int
         setMaxInflight?: int
         setServerURIs?: string
+        setUserName?: string
+        setPassword?: string
+        setWill?: void {
+            topicWill: string
+            payloadWill: string
+            qos: int
+            retained: bool 
+        }
+        setSocketFactory?: void {
+            caCrtFile: string
+            crtFile: string
+            keyFile: string
+            password: string
+        }  
+	    debug?: bool
     }
     subscribe?: void {
         topic[1,*]: string
@@ -193,6 +208,8 @@ To be included correctly you need to call it through the string ```include "mosq
 
 In this example I wanted to apply the MQTT communication protocol to a simple chat.
 Always exploiting the JavaService explained in the previous example, and exploiting Leonardo (a Web Server written in Jolie: https://github.com/jolie/leonardo) is sufficient to launch the command ```jolie leonardo.ol``` and subsequently open a browser to the page ```localhost:16000``` to observe its operation.
+
+To test the chat with your friends without necessarily having a server with Mosquitto installed, just use the sandbox provided at the link https://iot.eclipse.org/projects/sandboxes/
 
 #### frontend.ol
 
@@ -341,3 +358,92 @@ Sets the "Last Will and Testament" (LWT) for the connection. In the event that t
     - **payload** - the byte payload for the message : ```string```
     - **qos** - the quality of service to publish the message at (0, 1 or 2) : ```int```
     - **retained** - whether or not the message should be retained : ```bool```
+
+- **setSocketFactory : void**
+Sets the SocketFactory to use. This allows an application to apply its own policies around the creation of network sockets. If using an SSL connection, an SSLSocketFactory can be used to supply application-specific security settings.
+**Parameters**:
+    - **caCrtFile** - the path to the CA Certificate file : ```string```
+    - **crtFile** - the path to the Server Certificate file : ```string```
+    - **keyFile** - the path to the Server Key Pair file : ```string```
+    - **password** - the password you used to encrypt the certificates : ```string```
+
+## SSL configuration
+
+So far we have seen how to implement the MQTT protocol for data transmission without worrying about communication security.
+
+In order to properly run the connector with an SSL encrypted connection, you need to add dependencies to your project to the **Bouncy Castle** library https://www.bouncycastle.org/java.html.
+In particular, just add the following two jar files:
+- ```bcpkix-jdk15to18-166.jar```;
+- ```bcprov-ext-jdk15to18-166.jar```;
+to download the jars go to https://www.bouncycastle.org/latest_releases.html.
+
+##### Username and Password:
+
+The MQTT protocol provides different degrees of security.
+The simplest is authentication with **username** and **password**. In this case the communication is not secure (the transmitted data are not encrypted) but it is a good way to limit the access to the broker only to clients who know the username and password authentication.
+To implement this behavior you need to perform two steps:
+- create a password file;
+- modify the ```mosquitto.conf``` file to force the use of the password;
+To create a pasword file, open a text editor and enter your username and password, one for each line, separated by two dots as shown below:
+```java
+admin:adminPassword
+test:testPassword
+```
+
+Now you need to convert the password file that encrypts passwords, go to a command line and type:
+```mosquitto_passwd -U passwordfile```
+
+At this point you must copy the newly encrypted password file to the mosquitto installation folder.
+Now you only have to edit the ```mosquitto.conf``` file in which you will have to set the following commands:
+```java
+allow_anonymous false
+password_file C:\mosquitto\passwords.txt
+```
+In order to take advantage of the changes made it will be necessary to restart the execution of the Mosquito broker.
+
+After performing all the above steps, in the examples (```client_server``` and ```chat```) you can take advantage of the ```setUserName``` and ```setPassword``` connection options displayed in the ```MosquittoInterface.iol``` interface to create a connection to your Mosquitto broker as shown below:
+```java
+    request << {
+        brokerURL = "ssl://localhost:8883",
+        subscribe << {
+            topic = "jolie/test/chat"
+        }
+        // I can set all the options available from the Paho library
+        options << {
+            setUserName = "test"
+            setPassword = "testPassword"
+        }
+    }
+    setMosquitto@Mosquitto (request)()
+```
+
+##### Certified based encryption:
+
+Below is a text extracted from Mosquitto's official documentation (https://mosquitto.org/man/mosquitto-conf-5.html#):
+
+```When using certificate based encryption there are three options that affect authentication. The first is require_certificate, which may be set to true or false. If false, the SSL/TLS component of the client will verify the server but there is no requirement for the client to provide anything for the server: authentication is limited to the MQTT built in username/password. If require_certificate is true, the client must provide a valid certificate in order to connect successfully. In this case, the second and third options, use_identity_as_username and use_subject_as_username, become relevant. If set to true, use_identity_as_username causes the Common Name (CN) from the client certificate to be used instead of the MQTT username for access control purposes. The password is not used because it is assumed that only authenticated clients have valid certificates. This means that any CA certificates you include in cafile or capath will be able to issue client certificates that are valid for connecting to your broker. If use_identity_as_username is false, the client must authenticate as normal (if required by password_file) through the MQTT options. The same principle applies for the use_subject_as_username option, but the entire certificate subject is used as the username instead of just the CN.```
+
+In order to implement this type of encryption it is necessary to create a series of certificates. This is a fairly delicate step so I suggest you to follow the tutorial at the following link: https://mcuoneclipse.com/2017/04/14/enable-secure-communication-with-tls-and-the-mosquitto-broker/
+
+Once you have created the certificates, properly modified the ```mosquitto.conf``` file and restarted the Mosquitto broker as shown in the tutorial above, you are ready to implement an encrypted communication in the ```client_server``` and ```chat``` examples.
+
+To do this you need to set the certificate paths in the ```setSocketFactory``` option exposed by the ```MosquittoInterface.iol``` interface as shown below:
+
+```java
+    request << {
+        brokerURL = "ssl://localhost:8883",
+        subscribe << {
+            topic = "jolie/test/chat"
+        }
+        // I can set all the options available from the Paho library
+        options << {
+            setSocketFactory << {
+                caCrtFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_ca.crt"
+                crtFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_srv.crt"
+                keyFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_srv.key"
+                password = "password" //the password you used to encrypt the certificates
+            }
+        }
+    }
+    setMosquitto@Mosquitto (request)()
+```
