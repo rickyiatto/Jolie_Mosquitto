@@ -27,7 +27,12 @@
 				callJolie("getChatMessages", request, function(data) {
 					if (typeof data.messageQueue != 'undefined') {
 						for (i=0; i<data.messageQueue.length; i++) {
-							document.getElementById("textChat").value += data.messageQueue[i].username+" :   "+data.messageQueue[i].message+"\n";
+							var divChat = document.getElementById('textChat');
+							if (data.messageQueue[i].username == data.messageQueue[i].session_user) {
+								divChat.innerHTML += '<div id="divMyMessage"> <b>' + data.messageQueue[i].username.toUpperCase()+'</b>   :   '+data.messageQueue[i].message +'</div>';
+							} else {
+								divChat.innerHTML += '<div id="divOtherMessage"> <b>' + data.messageQueue[i].username.toUpperCase()+'</b>   :   '+data.messageQueue[i].message +'</div>';
+							}
 						}
 					}
 				})
@@ -45,8 +50,8 @@
 		<div id="div">
 			<h1 id="title">JOLIE CHAT using MOSQUITTO</h1>
 		</div>
-		<div id="div">
-			<textarea id="textChat" readonly="readonly" rows="14" cols="125"></textarea>
+		<div id="textChat">
+			<!-- <textarea id="textChat" readonly="readonly" rows="14" cols="125"></textarea> -->
 		</div>
 		<div id="div">
 			<input id="mex" type="text" placeholder="type your message here" size="75" maxlength="200" />
