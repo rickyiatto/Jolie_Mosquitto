@@ -50,9 +50,9 @@ init {
             setUserName = "joliechat"
             setPassword = "riccardoiattoni"
             setSocketFactory << {
-                caCrtFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_ca.crt"
-                crtFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_srv.crt"
-                keyFile = "C:\\Program Files\\mosquitto\\certs\\m2mqtt_srv.key"
+                caCrtFile = "C:\\Program Files\\mosquitto\\certs\\ca.crt"
+                crtFile = "C:\\Program Files\\mosquitto\\certs\\server.crt"
+                keyFile = "C:\\Program Files\\mosquitto\\certs\\server.key"
                 password = "riccardoiattoni"
             }
         }
@@ -71,6 +71,7 @@ main {
         global.messageQueue[#global.messageQueue] << {
             message = jsonMessage.message
             username = jsonMessage.username
+            session_user = global.username
         }
     }
 

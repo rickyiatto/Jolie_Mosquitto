@@ -39,18 +39,35 @@ div {
     color: #d19b00ff;
     background-color: #0a724fff;
     resize: none;
-    text-align: left;
     line-height: 200%;
     overflow: auto;
 }
 
-#divMessage {
+#divMyMessage {
+    margin-left: auto;
+    margin-right: 10px;
+    text-align: left;
     display: table;
     width: auto;
     padding: 5px 20px 5px 20px;
+    max-width: 500px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
-    /*border: solid 1px #d19b00ff;*/
+    border-radius: 15px;
+    color: #d19b00ff;
+    background-color: rgba(209, 153, 0, 0.25);
+}
+
+#divOtherMessage {
+    margin-left: 10px;
+    margin-right: auto;
+    text-align: left;
+    display: table;
+    width: auto;
+    padding: 5px 20px 5px 20px;
+    max-width: 500px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
     border-radius: 15px;
     color: #d19b00ff;
     background-color: #0b634dff;

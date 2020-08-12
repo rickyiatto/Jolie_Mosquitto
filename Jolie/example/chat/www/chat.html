@@ -28,7 +28,11 @@
 					if (typeof data.messageQueue != 'undefined') {
 						for (i=0; i<data.messageQueue.length; i++) {
 							var divChat = document.getElementById('textChat');
-							divChat.innerHTML += '<div id="divMessage"> <b>' + data.messageQueue[i].username.toUpperCase()+'</b>   :   '+data.messageQueue[i].message + '</div>';
+							if (data.messageQueue[i].username == data.messageQueue[i].session_user) {
+								divChat.innerHTML += '<div id="divMyMessage"> <b>' + data.messageQueue[i].username.toUpperCase()+'</b>   :   '+data.messageQueue[i].message +'</div>';
+							} else {
+								divChat.innerHTML += '<div id="divOtherMessage"> <b>' + data.messageQueue[i].username.toUpperCase()+'</b>   :   '+data.messageQueue[i].message +'</div>';
+							}
 						}
 					}
 				})

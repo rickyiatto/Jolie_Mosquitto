@@ -113,7 +113,7 @@ public class SslUtil {
 		/**
 		* Create SSL socket factory
 		*/
-		SSLContext context = SSLContext.getInstance("TLSv1.1");
+		SSLContext context = SSLContext.getInstance("TLSv1.2");
 		context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
 		
 		/**

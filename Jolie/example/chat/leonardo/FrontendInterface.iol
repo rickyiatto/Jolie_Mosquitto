@@ -22,6 +22,7 @@ type GetChatMessagesResponse: void {
     messageQueue*: void {
         message: string
         username: string
+        session_user: string
     }
 }
 

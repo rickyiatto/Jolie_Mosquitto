@@ -198,7 +198,7 @@ public class MosquittoConnectorJavaService extends JavaService {
                     
                 }
             }
-            
+            System.setProperty("https.protocols", "TLSv1.2");
             client.connect(options);
             if (request.hasChildren("subscribe")) {
                 client.setCallback(new SubscribeCallback(this));
