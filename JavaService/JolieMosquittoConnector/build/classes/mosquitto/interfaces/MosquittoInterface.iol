@@ -37,7 +37,7 @@ type MosquittoMessageRequest: void {
 
 type MosquittoRequest: void {
     topic: string
-    message: string 
+    message: string
     session_token?: string
     client_token?: string
 }
@@ -49,7 +49,7 @@ interface MosquittoPublisherInterface {
 
 interface MosquittoInterface {
     RequestResponse:
-        setMosquitto (SetMosquittoRequest)(void)
+        setMosquitto (SetMosquittoRequest)(void),
 }
 
 interface MosquittoReceiverInteface {
